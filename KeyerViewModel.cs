@@ -44,15 +44,35 @@ namespace Keyer__Carrot_test_
     }
     public class KeyerViewModel : INotifyPropertyChanged
     {
+        #region Fields
         protected BitmapSource origImg;
         protected BitmapSource procImg;
+        public BitmapSource OrigImg
+        {
+            get { return origImg; }
+            set
+            {
+                origImg = value;
+                UpdatePixels();
+                UpdateProcImg();
+                OnPropertyChanged("OrigImg");
+            }
+        }
+        public BitmapSource ProcImg
+        {
+            get { return procImg; }
+            set
+            {
+                procImg = value;
+                OnPropertyChanged("ProcImg");
+            }
+        }
 
         protected byte[] pixels;
         protected int stride;
 
         protected Brush fillForRect;
         protected Color pickedColor;
-
         public Brush FillForRect { get { return fillForRect; } 
             set { fillForRect = value; 
                 OnPropertyChanged("FillForRect"); } }
@@ -62,22 +82,20 @@ namespace Keyer__Carrot_test_
                 FillForRect = new SolidColorBrush(value); 
                 OnPropertyChanged("PickedColor"); } }
 
-        protected RelayCommand magicCommand;
-        protected RelayCommand openCommand;
-        protected RelayCommand saveCommand;
-
         protected IDialogService dialogService;
         protected IFileService<BitmapSource> fileService;
 
-        public BitmapSource OrigImg { get { return origImg; } 
-            set { origImg = value; 
-                UpdatePixels();
-                UpdateProcImg();
-                OnPropertyChanged("OrigImg"); } }
-        public BitmapSource ProcImg { get { return procImg; } 
-            set { procImg = value; 
-                OnPropertyChanged("ProcImg"); } }
+        protected int rDelta = 0;
+        protected int gDelta = 0;
+        protected int bDelta = 0;
+        public int RDelta { get { return rDelta; } set { rDelta = value; } }
+        public int GDelta { get { return gDelta; } set { gDelta = value; } }
+        public int BDelta { get { return bDelta; } set { bDelta = value; } }
 
+        protected RelayCommand resetCommand;
+        protected RelayCommand magicCommand;
+        protected RelayCommand openCommand;
+        protected RelayCommand saveCommand;
         public RelayCommand OpenCommand { get { return openCommand ?? 
                     (openCommand = new RelayCommand(obj =>
                     {
@@ -123,24 +141,46 @@ namespace Keyer__Carrot_test_
                     {
                         if (pixels == null) return;
 
-                        for (int i = 3; i < pixels.Length; i += 4)
+                        Parallel.For(0, OrigImg.PixelHeight * origImg.PixelWidth, n =>
                         {
-                            if (pixels[i-3] == PickedColor.B &&
-                                pixels[i-2] == PickedColor.G &&
-                                pixels[i-1] == PickedColor.R)
+                            if (pixels[n * 4    ] >= PickedColor.B - BDelta &&
+                                pixels[n * 4    ] <= PickedColor.B + BDelta &&
+                                pixels[n * 4 + 1] >= PickedColor.G - GDelta &&
+                                pixels[n * 4 + 1] <= PickedColor.G + GDelta &&
+                                pixels[n * 4 + 2] >= PickedColor.R - RDelta &&
+                                pixels[n * 4 + 2] <= PickedColor.R + RDelta)
                             {
-                                pixels[i] = 0;
+                                pixels[n * 4 + 3] = 0;
                             }
                             else
                             {
-                                pixels[i] = 255;
+                                pixels[n * 4 + 3] = 255;
                             }
-                        }
+                        });
                         UpdateProcImg();
                     }
                     ));
             }
         }
+        public RelayCommand ResetCommand
+        {
+            get
+            {
+                return resetCommand ??
+                    (resetCommand = new RelayCommand(obj =>
+                    {
+                        if (pixels == null) return;
+
+                        Parallel.For(0, OrigImg.PixelHeight * origImg.PixelWidth, n =>
+                        {
+                            pixels[n * 4 + 3] = 255;
+                        });
+                        UpdateProcImg();
+                    }
+                    ));
+            }
+        }
+        #endregion
 
         public KeyerViewModel(IDialogService dialogService, IFileService<BitmapSource> fileService)
         {

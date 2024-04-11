@@ -30,14 +30,22 @@
                     <RowDefinition MinHeight="100" MaxHeight="250"/>
                     <RowDefinition Height="36"/>
                     <RowDefinition Height="130"/>
+                    <RowDefinition/>
                     <RowDefinition Height="36"/>
                     <RowDefinition/>
                     <RowDefinition Height="36"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
                 <colorpicker:SquarePicker x:Name="colorPicker" 
                                           Grid.Row="0"
+                                          Grid.ColumnSpan="2"
                                           ColorState="{Binding ColorState, ElementName=colorSlider, Mode=TwoWay}"/>
-                <Grid Grid.Row="1" ShowGridLines="False">
+                <Grid Grid.Row="1" 
+                      Grid.ColumnSpan="2" 
+                      ShowGridLines="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="0.5*"/>
@@ -53,27 +61,101 @@
                 </Grid>
                 <colorpicker:ColorSliders x:Name="colorSlider" 
                                           Grid.Row="2"
+                                          Grid.ColumnSpan="2"
                                           ShowAlpha="False" 
                                           ShowFractionalPart="False"
                                           SelectedColor="{Binding PickedColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Grid.Row="3" Content="Применить" Margin="5,6,5,6" BorderBrush="#FFABADB3"
-                        Command="{Binding MagicCommand}"/>
-                <Grid Grid.Row="5">
+                <Grid Grid.Row="3"
+                      Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="40"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="openButton"
-                            Content="Открыть"
-                            Grid.Column="0"
-                            Margin="5,6,5,6"
-                            Command="{Binding OpenCommand}" BorderBrush="#FFABADB3"/>
-                    <Button x:Name="saveButton"
-                            Content="Сохранить"
-                            Grid.Column="1"
-                            Margin="5,6,5,6"
-                            Command="{Binding SaveCommand}" BorderBrush="#FFABADB3"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Content="R разброс"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="0"
+                           Content="G разброс"/>
+                    <Label Grid.Row="2"
+                           Grid.Column="0"
+                           Content="B разброс"/>
+                    <Label Grid.Row="0"
+                           Grid.Column="1"
+                           Content="{Binding Value, ElementName=RSlider}"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Content="{Binding Value, ElementName=GSlider}"/>
+                    <Label Grid.Row="2"
+                           Grid.Column="1"
+                           Content="{Binding Value, ElementName=BSlider}"/>
+                    <Slider Grid.Row="0"
+                            Grid.Column="2"
+                            x:Name="RSlider"
+                            Value="{Binding RDelta}" 
+                            Minimum="0" 
+                            Maximum="128"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0"
+                            SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
+                    <Slider Grid.Row="1"
+                            Grid.Column="2"
+                            x:Name="GSlider"
+                            Value="{Binding GDelta}" 
+                            Minimum="0" 
+                            Maximum="128"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0"
+                            SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
+                    <Slider Grid.Row="2"
+                            Grid.Column="2"
+                            x:Name="BSlider"
+                            Value="{Binding BDelta}" 
+                            Minimum="0" 
+                            Maximum="128"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0"
+                            SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
                 </Grid>
+                
+                <Button Grid.Column="0" 
+                        Grid.Row="4"
+                        Content="Применить" 
+                        Margin="5,6,5,6" 
+                        BorderBrush="#FFABADB3"
+                        Command="{Binding MagicCommand}"/>
+                <Button Grid.Column="1" 
+                        Grid.Row="4"
+                        Content="Отчистить" 
+                        Margin="5,6,5,6" 
+                        BorderBrush="#FFABADB3"
+                        Command="{Binding ResetCommand}"/>
+                <Button x:Name="openButton"
+                        Content="Открыть"
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Margin="5,6,5,6"
+                        Command="{Binding OpenCommand}" 
+                        BorderBrush="#FFABADB3"/>
+                <Button x:Name="saveButton"
+                        Content="Сохранить"
+                        Grid.Column="1"
+                        Grid.Row="6"
+                        Margin="5,6,5,6"
+                        Command="{Binding SaveCommand}" 
+                        BorderBrush="#FFABADB3"/>
             </Grid>
         </GroupBox>
     </Grid>
