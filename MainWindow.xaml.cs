@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,7 +21,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Keyer__Carrot_test_
-{ 
+{
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -28,8 +29,6 @@ namespace Keyer__Carrot_test_
             InitializeComponent();
 
             DataContext = new KeyerViewModel(new PngDialogService(), new PngService());
-
-            
         }
     }
 }

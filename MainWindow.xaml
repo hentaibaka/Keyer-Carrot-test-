@@ -4,33 +4,63 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
-        xmlns:local="clr-namespace:Keyer__Carrot_test_" d:DataContext="{d:DesignInstance Type=local:KeyerViewModel}"
+        xmlns:local="clr-namespace:Keyer__Carrot_test_" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" d:DataContext="{d:DesignInstance Type=local:KeyerViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1080">
-    <Grid ShowGridLines="False">
+        Title="Keyer" Height="720" Width="1080"
+        Background="Gray">
+    <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        <Grid ShowGridLines="False">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Image x:Name="ImageTop"
                    Grid.Row="0"
-                   Source="{Binding OrigImg}"/>
+                   RenderOptions.BitmapScalingMode="NearestNeighbor"
+                   Source="{Binding OrigImg}">
+                <Image.Resources>
+                    <Style TargetType="Image">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsColorPicker}"
+                                         Value="True">
+                                <Setter Property="Cursor" Value="Pen"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Resources>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding PickColorCommand}"
+                                               PassEventArgsToCommand="True"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
             <Image x:Name="ImageDown"
                    Grid.Row="1"
+                   RenderOptions.BitmapScalingMode="NearestNeighbor"
                    Source="{Binding ProcImg}"/>
         </Grid>
-        <GroupBox Header="меню" Margin="5" Grid.Column="1" BorderThickness="1" BorderBrush="#FFABADB3" FontSize="16" FontFamily="Arial Unicode MS" Foreground="Black">
-            <Grid ShowGridLines="False">
+        <GroupBox Padding="0 10 0 0"
+                  Margin="5" 
+                  Grid.Column="1" 
+                  BorderThickness="1" 
+                  BorderBrush="#FFABADB3" 
+                  FontSize="16" 
+                  FontFamily="Arial Unicode MS" 
+                  Foreground="Black"
+                  Background="White">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition MinHeight="100" MaxHeight="250"/>
                     <RowDefinition Height="36"/>
                     <RowDefinition Height="130"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="66"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="36"/>
                     <RowDefinition/>
                     <RowDefinition Height="36"/>
@@ -44,16 +74,21 @@
                                           Grid.ColumnSpan="2"
                                           ColorState="{Binding ColorState, ElementName=colorSlider, Mode=TwoWay}"/>
                 <Grid Grid.Row="1" 
-                      Grid.ColumnSpan="2" 
-                      ShowGridLines="False">
+                      Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="0.5*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
-                            Content="Пипетка" Margin="5,6,5,6" BorderBrush="#FFABADB3"/>
-                    <Rectangle Grid.Column="1" Margin="5,6,5,6" Stroke="#FFABADB3" Fill="{Binding FillForRect}"/>
+                    <ToggleButton Grid.Column="0"
+                                  Content="Пипетка" 
+                                  Margin="5,6,5,6" 
+                                  BorderBrush="#FFABADB3"
+                                  IsChecked="{Binding IsColorPicker}"/>
+                    <Rectangle Grid.Column="1" 
+                               Margin="5,6,5,6" 
+                               Stroke="#FFABADB3" 
+                               Fill="{Binding FillForRect}"/>
                     <colorpicker:HexColorTextBox x:Name="colorHEX" 
                                              Grid.Column="2"
                                              ShowAlpha="False" 
@@ -79,28 +114,28 @@
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0"
                            Grid.Column="0"
-                           Content="R разброс"/>
+                           Content="R разброс" FontSize="14"/>
                     <Label Grid.Row="1"
                            Grid.Column="0"
-                           Content="G разброс"/>
+                           Content="G разброс" FontSize="14"/>
                     <Label Grid.Row="2"
                            Grid.Column="0"
-                           Content="B разброс"/>
+                           Content="B разброс" FontSize="14"/>
                     <Label Grid.Row="0"
                            Grid.Column="1"
-                           Content="{Binding Value, ElementName=RSlider}"/>
+                           Content="{Binding Value, ElementName=RSlider}" FontSize="14"/>
                     <Label Grid.Row="1"
                            Grid.Column="1"
-                           Content="{Binding Value, ElementName=GSlider}"/>
+                           Content="{Binding Value, ElementName=GSlider}" FontSize="14"/>
                     <Label Grid.Row="2"
                            Grid.Column="1"
-                           Content="{Binding Value, ElementName=BSlider}"/>
+                           Content="{Binding Value, ElementName=BSlider}" FontSize="14"/>
                     <Slider Grid.Row="0"
                             Grid.Column="2"
                             x:Name="RSlider"
                             Value="{Binding RDelta}" 
                             Minimum="0" 
-                            Maximum="128"
+                            Maximum="255"
                             IsSnapToTickEnabled="True"
                             TickFrequency="1"
                             IsSelectionRangeEnabled="True"
@@ -111,7 +146,7 @@
                             x:Name="GSlider"
                             Value="{Binding GDelta}" 
                             Minimum="0" 
-                            Maximum="128"
+                            Maximum="255"
                             IsSnapToTickEnabled="True"
                             TickFrequency="1"
                             IsSelectionRangeEnabled="True"
@@ -122,29 +157,78 @@
                             x:Name="BSlider"
                             Value="{Binding BDelta}" 
                             Minimum="0" 
-                            Maximum="128"
+                            Maximum="255"
                             IsSnapToTickEnabled="True"
                             TickFrequency="1"
                             IsSelectionRangeEnabled="True"
                             SelectionStart="0"
                             SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
                 </Grid>
-                
+                <Grid Grid.Row="4"
+                      Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="40"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0"
+                           Grid.Column="0"
+                           Content="Рад. сглаж." FontSize="14"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="0"
+                           Content="Сила сглаж." FontSize="14"/>
+                    <Label Grid.Row="0"
+                           Grid.Column="1"
+                           Content="{Binding Value, ElementName=SmoothRadiusSlider}" FontSize="14"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Content="{Binding Value, ElementName=SmoothStrengthSlider}" FontSize="14"/>
+                    <Slider Grid.Row="0"
+                            Grid.Column="2"
+                            x:Name="SmoothRadiusSlider"
+                            Value="{Binding SmoothRadius}" 
+                            Minimum="0" 
+                            Maximum="30"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0"
+                            SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
+                    <Slider Grid.Row="1"
+                            Grid.Column="2"
+                            x:Name="SmoothStrengthSlider"
+                            Value="{Binding SmoothStrength}" 
+                            Minimum="0"
+                            Maximum="100"
+                            TickFrequency="1"
+                            IsSnapToTickEnabled="True"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0"
+                            SelectionEnd="{Binding RelativeSource={RelativeSource Self}, Path=Value}"/>
+                </Grid>
+                <CheckBox Grid.Row="5" 
+                          Grid.ColumnSpan="2"
+                          IsChecked="{Binding ShowAlpha}"
+                          Content="Показывать прозрачность"/>
                 <Button Grid.Column="0" 
-                        Grid.Row="4"
+                        Grid.Row="6"
                         Content="Применить" 
                         Margin="5,6,5,6" 
                         BorderBrush="#FFABADB3"
                         Command="{Binding MagicCommand}"/>
                 <Button Grid.Column="1" 
-                        Grid.Row="4"
+                        Grid.Row="6"
                         Content="Отчистить" 
                         Margin="5,6,5,6" 
                         BorderBrush="#FFABADB3"
                         Command="{Binding ResetCommand}"/>
                 <Button x:Name="openButton"
                         Content="Открыть"
-                        Grid.Row="6"
+                        Grid.Row="8"
                         Grid.Column="0"
                         Margin="5,6,5,6"
                         Command="{Binding OpenCommand}" 
@@ -152,7 +236,7 @@
                 <Button x:Name="saveButton"
                         Content="Сохранить"
                         Grid.Column="1"
-                        Grid.Row="6"
+                        Grid.Row="8"
                         Margin="5,6,5,6"
                         Command="{Binding SaveCommand}" 
                         BorderBrush="#FFABADB3"/>
